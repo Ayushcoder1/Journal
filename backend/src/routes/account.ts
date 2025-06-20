@@ -36,4 +36,15 @@ router.get('/blog/:id', authmiddleware, async (req : any, res : any) => {
     return res.status(200).json(data.rows);
 })
 
+router.get('/', authmiddleware, async (req : any, res : any) => {
+    const email = req.user;
+    const data = await pool.query(`
+        SELECT * FROM Post
+        WHERE authorId IS NOT (SELECT id FROM Users WHERE email= $1)
+        ORDER BY reads DESC LIMIT 10;
+    `, [email]);
+
+    return res.status(200).json(data.rows);
+})
+
 export default router;
