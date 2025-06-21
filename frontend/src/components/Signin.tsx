@@ -1,10 +1,21 @@
+import { useSetAtom } from 'jotai';
 import {Link, useNavigate} from 'react-router-dom'
+import { sessionAtom } from '../store/atoms';
+import { useRef } from 'react';
 
 function Signin({isSignin} : {isSignin : number}){
     const warning = null;
     const navigate = useNavigate();
+    const ses = useSetAtom(sessionAtom);
+    const emailRef = useRef<HTMLInputElement>(null);
+    const nameRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
     
-    const session = () => {
+    const session = async () => {
+        const email = emailRef.current ? emailRef.current.value : null;
+        const password = passwordRef.current ? passwordRef.current.value : null;
+        const name = nameRef.current ? nameRef.current.value : null;
+        await ses({isSignin, email, password, name});
         navigate('/');
     }
     
@@ -22,17 +33,17 @@ function Signin({isSignin} : {isSignin : number}){
             {
                 !isSignin && 
                 <div>
-                    <p className='text-lg font-semibold text-black mb-2'>Username</p>
-                    <input type="text" placeholder='Hello there' className='border-black border-2 w-80 rounded-sm p-2 mb-2'/>
+                    <p className='text-lg font-semibold text-black mb-2'>Name</p>
+                    <input ref={nameRef} type="text" placeholder='Hello there' className='border-black border-2 w-80 rounded-sm p-2 mb-2'/>
                 </div>
             }
             <div>
                 <p className='text-lg font-semibold text-black'>Email</p>
-                <input type="text" placeholder='abc@gmail.com' className='border-black border-2 w-80 rounded-sm p-2 mb-2'/>
+                <input ref={emailRef} type="text" placeholder='abc@gmail.com' className='border-black border-2 w-80 rounded-sm p-2 mb-2'/>
             </div>
             <div>
                 <p className='text-lg font-semibold text-black'>Password</p>
-                <input type="text" placeholder='12345678' className='border-black border-2 w-80 rounded-sm p-2 mb-6'/>
+                <input ref={passwordRef} type="text" placeholder='12345678' className='border-black border-2 w-80 rounded-sm p-2 mb-6'/>
             </div>
             <div>
                 <button onClick={session} className='border-black border-2 w-80 rounded-full p-2 mb-2 text-white bg-green-500 text-lg font-bold'>{isSignin ? "Log in" : "Sign up"}</button>

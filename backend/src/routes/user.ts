@@ -15,7 +15,7 @@ router.post('/login', validateUser, async (req : any, res : any) => {
     if(!lookup) return res.status(410).json({msg : "Incorrect Username or Password"});
 
     const token = jwt.sign(req.body.email, passKey);
-    return res.status(200).json({token : token});
+    return res.status(200).json({token : token, name : lookup.rows[0].name});
 })
 
 router.post('/signup', validateUser, async (req : any, res : any) => {
@@ -31,7 +31,7 @@ router.post('/signup', validateUser, async (req : any, res : any) => {
     `, [req.body.email, req.body.name, req.body.password]);
 
     const token = jwt.sign(req.body.email, passKey);
-    return res.status(200).json({token : token});
+    return res.status(200).json({token : token, name : req.body.name});
 })
 
 export default router;

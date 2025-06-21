@@ -10,7 +10,7 @@ router.post('/blog', authmiddleware, validatePost, async (req : any, res : any) 
     await pool.query(`
         INSERT INTO Post (title, content, published, authorId)
         VALUES ($1, $2, $3, (SELECT id FROM Users WHERE email=$4));
-    `,[req.body.title, req.body.content, req.body.published, email]);
+    `,[req.body.title, req.body.content, true, email]);
 
     return res.sendStatus(200);
 });
@@ -28,22 +28,40 @@ router.put('/blog/:id', authmiddleware, validatePost, async (req : any, res : an
 
 router.get('/blog/:id', authmiddleware, async (req : any, res : any) => {
     const id : string = req.params.id;
+
     const data = await pool.query(`
-        SELECT * FROM Post
-        WHERE id = $1;
-    `,[id]);
+        SELECT p.id, p.title, p.content, p.created_at, p.reads, u.name FROM
+        Users u JOIN Post p ON u.id = p.authorId
+        WHERE p.id = $1
+        ORDER BY reads DESC LIMIT 10;
+    `, [id]);
 
     return res.status(200).json(data.rows);
 })
 
-router.get('/', authmiddleware, async (req : any, res : any) => {
+router.get('/feed', authmiddleware, async (req : any, res : any) => {
     const email = req.user;
+    // console.log(email);
     const data = await pool.query(`
-        SELECT * FROM Post
-        WHERE authorId IS NOT (SELECT id FROM Users WHERE email= $1)
+        SELECT p.id, p.title, p.content, p.created_at, p.reads, u.name FROM
+        Users u JOIN Post p ON u.id = p.authorId
+        WHERE u.email != $1
         ORDER BY reads DESC LIMIT 10;
     `, [email]);
+    // console.log(data);
+    return res.status(200).json(data.rows);
+})
 
+router.get('/stories', authmiddleware, async (req : any, res : any) => {
+    const email = req.user;
+    // console.log(email);
+    const data = await pool.query(`
+        SELECT p.id, p.title, p.content, p.created_at, p.reads, p.published, u.name FROM
+        Users u JOIN Post p ON u.id = p.authorId
+        WHERE u.email = $1
+        ORDER BY reads DESC;
+    `, [email]);
+    // console.log(data);
     return res.status(200).json(data.rows);
 })
 

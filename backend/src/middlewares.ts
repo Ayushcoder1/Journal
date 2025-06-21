@@ -16,8 +16,9 @@ const postSchema = zod.object({
 });
 
 export function validateUser(req : any, res : any, next : any){
+    // console.log(req.body);
     const { success } = userSchema.safeParse(req.body);
-    if(!success) return res.send(409).json({msg : "Invalid user inputs."});
+    if(!success) return res.status(409).json({msg : "Invalid user inputs."});
     next();
 }
 
@@ -32,7 +33,8 @@ export function authmiddleware(req : any, res : any, next : any){
     if (!token) return res.status(401).json({msg : 'No token'});
     try {
         const payload = jwt.verify(token, passKey) as jwt.JwtPayload;
-        req.user = payload.username;
+        // console.log(payload);
+        req.user = payload;
         next();
     } catch (err) {
         res.status(401).send('Invalid token');

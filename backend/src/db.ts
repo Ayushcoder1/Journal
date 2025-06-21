@@ -15,30 +15,28 @@ pool.on('error', (err, client) => {
 });
 
 // async function addTables(){
-
-    // await pool.query(`
-    //     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-    // `);
-
-    // await pool.query(`
-    //     CREATE TABLE Users (
-    //         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    //         email VARCHAR(60) UNIQUE NOT NULL,
-    //         name VARCHAR(40),
-    //         password VARCHAR(40) NOT NULL
-    //     );
-    // `);
-
+//     await pool.query(`
+//         CREATE TABLE Users (
+//             id BIGSERIAL PRIMARY KEY,
+//             email VARCHAR(60) UNIQUE NOT NULL,
+//             name VARCHAR(40),
+//             password VARCHAR(40) NOT NULL
+//         );
+//     `);
 //     await pool.query(`
 //         CREATE TABLE Post (
-//             id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+//             id BIGSERIAL PRIMARY KEY,
 //             title VARCHAR(200) NOT NULL,
 //             content TEXT,
 //             published BOOLEAN DEFAULT FALSE,
-//             authorId UUID,
+//             authorId BIGINT,
+//             reads BIGINT,
+//             created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 //             FOREIGN KEY(authorId) REFERENCES Users(id) ON DELETE CASCADE
 //         );
 //     `)
 // }
+
+// addTables();
 
 export default pool;
