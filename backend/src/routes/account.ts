@@ -56,7 +56,7 @@ router.get('/feed', authmiddleware, async (req : any, res : any) => {
     const data = await pool.query(`
         SELECT p.id, p.title, p.content, p.created_at, p.reads, u.name FROM
         Users u JOIN Post p ON u.id = p.authorId
-        WHERE u.email != $1
+        WHERE u.email != $1 AND p.published = true
         ORDER BY reads DESC LIMIT 10;
     `, [email]);
     // console.log(data);
