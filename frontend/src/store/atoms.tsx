@@ -101,7 +101,7 @@ export const fetchBlogAtom = atom(null,
 
 export const publishAtom = atom(null, 
     async(get, set, blog : Blog) => {
-        const {title, content} = blog;
+        const {title, content, published} = blog;
         const token = get(tokenAtom);
         const res = await fetch(`${dns}/account/blog`, {
             method: 'POST',
@@ -109,13 +109,13 @@ export const publishAtom = atom(null,
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token
             },
-            body : JSON.stringify({title, content})
+            body : JSON.stringify({title, content, published})
         });
         const data = await res.json();
         if (res.status === 200) {
             // console.log(data);
             // set(blogAtom, data[0]);
-            sessionStorage.setItem('id', data.id);
+            // sessionStorage.setItem('id', data.id);
         } else {
             set(warningAtom, data.msg);
         }
@@ -140,16 +140,51 @@ export const getStoriesAtom = atom(null,
             set(warningAtom, data.msg);
         }
     }
-    
 )
 
-export const exitAtom = atom(null, 
-    (_get, set) => {
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('draft');
-        sessionStorage.removeItem('Author');
-        set(tokenAtom, null);
-        set(blogsAtom, []);
+export const editBlogAtom = atom(null, 
+    async (get, _set, blog : Blog) => {
+        const {title, content, published, id} = blog;
+        const token = get(tokenAtom);
+        const res = await fetch(`${dns}/account/blog/${id}`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body : JSON.stringify({title, content, published})
+        });
+        if (res.status === 200) {
+            // console.log(data);
+            // set(blogAtom, data[0]);
+            // sessionStorage.setItem('id', data.id);
+        } else {
+            // set(warningAtom, data.msg);
+        }
+    }
+)
 
+export const initializeBlogAtom = atom(null, 
+    async (get, set) => {
+        const token = get(tokenAtom);
+        const title = "" 
+        const content = ""
+        const published = false;
+        const res = await fetch(`${dns}/account/blog`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body : JSON.stringify({title, content, published})
+        });
+        const data = await res.json();
+        if (res.status === 201) {
+            sessionStorage.removeItem('draft');
+            const blog : Blog = {title : title, content : content, published : published, id : data.id}
+            sessionStorage.setItem('draft', JSON.stringify(blog));
+        } else {
+            set(warningAtom, data.msg);
+        }
     }
 )

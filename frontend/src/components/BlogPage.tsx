@@ -7,7 +7,6 @@ export default function BlogPage() {
     const blog = useAtomValue(blogAtom);
     const fetchBlog = useSetAtom(fetchBlogAtom);
     const { id } = useParams<{ id: string }>();
-    console.log(id);
     useEffect(() => {
         fetchBlog(id);
     }, []);

@@ -15,10 +15,10 @@ export default function Drafts() {
     return <div>
         {stories.map((blog) => {
             if (blog.published) {
-                return <></>
+                return null;
             }
             else{
-                return <div className="my-6">
+                return <div className="my-6" key={blog.id}>
                     <button onClick={() => continueDraft(blog)} className="hover:cursor-pointer text-xl font-mono font-semibold">{blog.title}</button>
                 </div>
             }

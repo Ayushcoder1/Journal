@@ -7,6 +7,9 @@ import Page from "./Page"
 import Stories from "./Stories"
 import Drafts from "./components/Drafts"
 import Published from "./components/Published"
+import Profile from "./Profile"
+import Home from "./components/Home"
+import About from "./components/About"
 
 function App() {
   return (
@@ -21,6 +24,11 @@ function App() {
             <Route index element={<Navigate to="draft" replace />}/>
             <Route path="draft" element={<Drafts />}/>
             <Route path="published" element={<Published />}/>
+        </Route>
+        <Route path="/account/profile" element={<Profile />}>
+            <Route index element={<Navigate to="home" replace />}/>
+            <Route path="home" element={<Home />}/>
+            <Route path="about" element={<About />}/>
         </Route>
         <Route path="*" element={<Login />}/>
       </Routes>

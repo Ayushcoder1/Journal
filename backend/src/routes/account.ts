@@ -6,13 +6,23 @@ import { validatePost } from '../middlewares';
 const router = express.Router();
 
 router.post('/blog', authmiddleware, validatePost, async (req : any, res : any) => {
-    const email : string = req.user;
-    await pool.query(`
-        INSERT INTO Post (title, content, published, authorId)
-        VALUES ($1, $2, $3, (SELECT id FROM Users WHERE email=$4));
-    `,[req.body.title, req.body.content, true, email]);
+    const email = req.user;
 
-    return res.sendStatus(200);
+    const {
+        rows: [inserted],
+    } = await pool.query<{ id: number }>(
+        `
+        INSERT INTO Post (title, content, published, authorId)
+        VALUES (
+        $1, $2, $3,
+        (SELECT id FROM Users WHERE email = $4)
+        )
+        RETURNING id;
+        `,
+        [req.body.title, req.body.content, req.body.published, email]
+    );
+
+    return res.status(201).json({ id: inserted.id });
 });
 
 router.put('/blog/:id', authmiddleware, validatePost, async (req : any, res : any) => {
@@ -23,7 +33,7 @@ router.put('/blog/:id', authmiddleware, validatePost, async (req : any, res : an
         WHERE id = $4;
     `,[req.body.title, req.body.content, req.body.published, id]);
 
-    return res.sendStatus(200);
+    return res.status(200).json();
 })
 
 router.get('/blog/:id', authmiddleware, async (req : any, res : any) => {
