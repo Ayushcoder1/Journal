@@ -1,10 +1,10 @@
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import {Link, useNavigate} from 'react-router-dom'
-import { sessionAtom } from '../store/atoms';
+import { sessionAtom, warningAtom } from '../store/atoms';
 import { useRef } from 'react';
 
 function Signin({isSignin} : {isSignin : number}){
-    const warning = null;
+    const warning = useAtomValue(warningAtom);
     const navigate = useNavigate();
     const ses = useSetAtom(sessionAtom);
     const emailRef = useRef<HTMLInputElement>(null);
@@ -16,7 +16,8 @@ function Signin({isSignin} : {isSignin : number}){
         const password = passwordRef.current ? passwordRef.current.value : null;
         const name = nameRef.current ? nameRef.current.value : null;
         await ses({isSignin, email, password, name});
-        navigate('/');
+        if(sessionStorage.getItem('token') == null) return;
+        navigate('/account/feed');
     }
     
     return (
@@ -48,7 +49,7 @@ function Signin({isSignin} : {isSignin : number}){
             <div>
                 <button onClick={session} className='border-black border-2 w-80 rounded-full p-2 mb-2 text-white bg-green-500 text-lg font-bold'>{isSignin ? "Log in" : "Sign up"}</button>
             </div>
-            <p className='text-center text-zinc-400 italic font-semibold'>{isSignin ? "New user?  " : "Already have an account?  "} <Link className='text-blue-400 underline' to={isSignin ? "../user/signup" : "../user/login"}>{isSignin ? "Sign up" : "Log in"}</Link></p>
+            <p className='text-center text-zinc-400 italic font-semibold'>{isSignin ? "New user?  " : "Already have an account?  "} <Link className='text-blue-400 underline' to={isSignin ? "/user/signup" : "/user/login"}>{isSignin ? "Sign up" : "Log in"}</Link></p>
         </div>
     )
 }

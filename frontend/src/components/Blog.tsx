@@ -7,7 +7,7 @@ export default function Blog({blog} : {blog : Blog}) {
     const navigate = useNavigate();
     const renderPage = (blog : Blog) => {
         blogSet(blog);
-        navigate(`account/page/${blog.id}`);
+        navigate(`/account/page/${blog.id}`);
     }
     const date = blog.created_at?.substring(0, 10);
     return <div className="p-4">

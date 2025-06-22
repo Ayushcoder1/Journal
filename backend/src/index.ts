@@ -9,6 +9,6 @@ app.use(express.json());
 
 app.use("/", rootRouter);
 
-app.listen(3000, () => {
-  console.log("Server listening at http://localhost:3000");
+app.listen(3001, () => {
+  console.log("Server listening at port 3001");
 });

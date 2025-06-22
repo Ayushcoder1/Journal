@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post('/blog', authmiddleware, validatePost, async (req : any, res : any) => {
     const email = req.user;
+    const title : string = req.body.title == "" ? 'Untitled story' : req.body.title;
 
     const {
         rows: [inserted],
@@ -19,7 +20,7 @@ router.post('/blog', authmiddleware, validatePost, async (req : any, res : any) 
         )
         RETURNING id;
         `,
-        [req.body.title, req.body.content, req.body.published, email]
+        [title, req.body.content, req.body.published, email]
     );
 
     return res.status(201).json({ id: inserted.id });

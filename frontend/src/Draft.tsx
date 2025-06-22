@@ -9,7 +9,7 @@ export default function Draft() {
     const contentRef = useRef<HTMLTextAreaElement>(null);
     const navigate = useNavigate();
     const draftBlog : Blog = JSON.parse(sessionStorage.getItem('draft') || "{}");
-    const draftTitle = draftBlog.title;
+    const draftTitle = draftBlog.title == 'Untitled story' ? "" : draftBlog.title;
     const draftContent = draftBlog.content;
     const newId = draftBlog.id;
     const editBlog = useSetAtom(editBlogAtom);
@@ -35,6 +35,8 @@ export default function Draft() {
         const title = titleRef.current ? titleRef.current.value : "";
         const content = contentRef.current ? contentRef.current.value : "";
         const published = false;
+
+        sessionStorage.setItem('draft', JSON.stringify({title, content, published, id : newId}));
 
         if(saveTimer.current !== null) clearTimeout(saveTimer.current);
         setStatus('Saving . . .');
