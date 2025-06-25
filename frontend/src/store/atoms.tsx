@@ -27,6 +27,8 @@ export const storiesAtom = atom<Blog[]>([]);
 
 export const draftAtom = atom<Blog>();
 
+export const filteredBlogsAtom = atom<Blog[]>([]);
+
 export const blogAtom = atom<Blog>({
     title : "",
     content : "",
@@ -34,7 +36,7 @@ export const blogAtom = atom<Blog>({
 });
 
 // const dns = "http://localhost:3001";
-const dns = "http://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com:3001";
+const dns = "http://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/Journal";
 
 export const sessionAtom = atom(null,
     async (_get, set, content : Session) => {
@@ -186,6 +188,27 @@ export const initializeBlogAtom = atom(null,
             const blog : Blog = {title : title, content : content, published : published, id : data.id}
             sessionStorage.setItem('draft', JSON.stringify(blog));
         } else {
+            set(warningAtom, data.msg);
+        }
+    }
+)
+
+export const searchQueryAtom = atom(null, 
+    async (get, set, filter : string) => {
+        const token = get(tokenAtom);
+        if(!filter) filter = "_";
+        const res = await fetch(`${dns}/account/blog/filter/${filter}`, {
+            method: 'GET',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+        });
+        const data = await res.json();
+        if(res.status === 200){
+            set(filteredBlogsAtom, data);
+        }
+        else{
             set(warningAtom, data.msg);
         }
     }

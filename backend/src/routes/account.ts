@@ -76,4 +76,16 @@ router.get('/stories', authmiddleware, async (req : any, res : any) => {
     return res.status(200).json(data.rows);
 })
 
+router.get('/blog/filter/:filter', authmiddleware, async (req : any, res : any) => {
+    const filter = req.params.filter;
+    const data = await pool.query(`
+        SELECT p.id, p.title, p.content, p.created_at, p.reads, u.name FROM
+        Users u JOIN Post p ON u.id = p.authorId
+        WHERE p.published = true AND p.title ILIKE $1
+        ORDER BY reads DESC LIMIT 10; 
+    `, [`%${filter}%`]);
+
+    return res.status(200).json(data.rows);
+})
+
 export default router;

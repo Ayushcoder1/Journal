@@ -1,24 +1,62 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileDropdown from "./components/ProfileDropdown";
-import { initializeBlogAtom } from "./store/atoms";
+import { initializeBlogAtom, searchQueryAtom } from "./store/atoms";
 import { useSetAtom } from "jotai";
+import Search from "./components/Search";
 
 export default function Navbar(){
     const navigate = useNavigate();
     const [toggle, setToggle] = useState(false);
     const author = sessionStorage.getItem('Author') || "Author";
     const initialize = useSetAtom(initializeBlogAtom);
+    const saveTimer = useRef<number | null>(null);
+    const search = useSetAtom(searchQueryAtom)
+    const searchRef = useRef<HTMLInputElement>(null);
+    const resultsRef = useRef<HTMLDivElement>(null);
+    const [showSearchResults, setShowSearchResults] = useState(true);
+
+    const sendFilter = () => {
+        const filter = searchRef.current ? searchRef.current.value : "";
+        if(saveTimer.current !== null) clearTimeout(saveTimer.current);
+
+        saveTimer.current = setTimeout(async () => {
+            await search(filter)
+        }, 1000);
+    }
+
+    useEffect(() => {
+        function onClick(e: MouseEvent) {
+        // if click is neither on the input nor inside the results → hide
+        if (
+            searchRef.current &&
+            !searchRef.current.contains(e.target as Node) &&
+            resultsRef.current &&
+            !resultsRef.current.contains(e.target as Node)
+        ) {
+            setShowSearchResults(false);
+        }
+        else setShowSearchResults(true);
+        }
+        document.addEventListener('click', onClick);
+        return () => document.removeEventListener('click', onClick);
+    }, []);
 
     return <div>
         <div className="flex justify-between bg-white p-4 border-b-2 border-zinc-200">
             <div className="flex gap-2">
                 <button onClick={() => navigate('/account/feed')} className="text-4xl font-bold font-mono mx-2 hover:cursor-pointer">Journal</button>
                 <div className="relative">
-                    <input type="text" placeholder="Search" className="rounded-full px-4 py-2 pl-10 border-2 border-zinc-400 w-80"/>
+                    <input ref={searchRef} onChange={sendFilter} type="text" placeholder="Search" className="rounded-full px-4 py-2 pl-10 border-2 border-zinc-400 w-80"/>
                     <svg className="w-8 h-8 text-zinc-500 absolute left-2 top-1/2 transform -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="gray" viewBox="0 0 24 24">
                         <path d="M4.092 11.06a6.95 6.95 0 1 1 13.9 0 6.95 6.95 0 0 1-13.9 0m6.95-8.05a8.05 8.05 0 1 0 5.13 14.26l3.75 3.75a.56.56 0 1 0 .79-.79l-3.73-3.73A8.05 8.05 0 0 0 11.042 3z"></path>
                     </svg>
+                    {
+                        showSearchResults && 
+                        <div ref={resultsRef} className="absolute top-16">
+                            <Search />
+                        </div>
+                    }
                 </div>
             </div>
 

@@ -9,7 +9,7 @@ export default function BlogPage() {
     const { id } = useParams<{ id: string }>();
     useEffect(() => {
         fetchBlog(id);
-    }, []);
+    }, [id]);
 
     return <div className="grid grid-cols-4 mx-24 my-16 gap-16">
         <div className="col-span-3">
