@@ -62,8 +62,8 @@ export default function Navbar(){
 
             <div className="flex gap-8 hover:cursor-pointer">
                 <div className="flex gap-2 pt-2" onClick={async () => {
-                    await initialize();
-                    navigate('/account/create')
+                    const id = await initialize();
+                    navigate('/account/create/' + id);
                 }}>
                     <svg className="w-8 h-8" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" aria-label="Write">
                         <path fill="currentColor" d="M14 4a.5.5 0 0 0 0-1zm7 6a.5.5 0 0 0-1 0zm-7-7H4v1h10zM3 4v16h1V4zm1 17h16v-1H4zm17-1V10h-1v10zm-1 1a1 1 0 0 0 1-1h-1zM3 20a1 1 0 0 0 1 1v-1zM4 3a1 1 0 0 0-1 1h1z"></path>

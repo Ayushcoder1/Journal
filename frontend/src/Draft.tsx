@@ -1,33 +1,38 @@
 import { useSetAtom } from "jotai";
 import { useEffect, useRef, useState } from "react";
-import { editBlogAtom, type Blog } from "./store/atoms";
-import { useNavigate } from "react-router-dom";
+import { blogAtom, editBlogAtom, fetchBlogAtom } from "./store/atoms";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAtomValue } from "jotai";
 
 export default function Draft() {
     const author = sessionStorage.getItem('Author') || "Author";
     const titleRef = useRef<HTMLTextAreaElement>(null);
     const contentRef = useRef<HTMLTextAreaElement>(null);
     const navigate = useNavigate();
-    const draftBlog : Blog = JSON.parse(sessionStorage.getItem('draft') || "{}");
-    const draftTitle = draftBlog.title == 'Untitled story' ? "" : draftBlog.title;
-    const draftContent = draftBlog.content;
-    const newId = draftBlog.id;
+    const { id } = useParams<{ id: string }>();
+    const blog = useAtomValue(blogAtom);
+    const fetchBlog = useSetAtom(fetchBlogAtom);
     const editBlog = useSetAtom(editBlogAtom);
     const saveTimer = useRef<number | null>(null)
     const [status, setStatus] = useState<''|'Saving . . .'|'Saved!'>('')
 
     useEffect(() => {
-        titleRef.current!.value = draftTitle;
-        contentRef.current!.value = draftContent;
-    }, []);
+        if(!id) navigate('/account/feed');
+        fetchBlog(id);
+    }, [id, fetchBlog, navigate]);
+
+    // and this effect will update your refs whenever the atom changes:
+    useEffect(() => {
+        titleRef.current!.value   = blog.title
+        contentRef.current!.value = blog.content
+    }, [blog]);
 
     const publish = async () => {
         const title = titleRef.current ? titleRef.current.value : "";
         const content = contentRef.current ? contentRef.current.value : "";
         const published = true;
 
-        await editBlog({title, content, published, id:newId});
-        const id = newId;
+        await editBlog({title, content, published, id:id});
         navigate('/account/page/' + id);
     }
 
@@ -36,13 +41,11 @@ export default function Draft() {
         const content = contentRef.current ? contentRef.current.value : "";
         const published = false;
 
-        sessionStorage.setItem('draft', JSON.stringify({title, content, published, id : newId}));
-
         if(saveTimer.current !== null) clearTimeout(saveTimer.current);
         setStatus('Saving . . .');
 
         saveTimer.current = setTimeout(async () => {
-            await editBlog({title, content, published, id : newId})
+            await editBlog({title, content, published, id : id})
             setStatus('Saved!');
         }, 3000);
     }

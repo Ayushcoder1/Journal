@@ -8,8 +8,8 @@ export default function Drafts() {
     const navigate = useNavigate();
 
     const continueDraft = (blog : Blog) => {
-        sessionStorage.setItem('draft', JSON.stringify(blog));
-        navigate('/account/create');
+        // sessionStorage.setItem('draft', JSON.stringify(blog));
+        navigate('/account/create/' + blog.id);
     }
 
     return <div>

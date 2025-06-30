@@ -40,6 +40,12 @@ router.put('/blog/:id', authmiddleware, validatePost, async (req : any, res : an
 router.get('/blog/:id', authmiddleware, async (req : any, res : any) => {
     const id : string = req.params.id;
 
+    await pool.query(
+      `UPDATE Post SET reads = reads + 1
+       WHERE id = $1`,
+      [id]
+    );
+
     const data = await pool.query(`
         SELECT p.id, p.title, p.content, p.created_at, p.reads, u.name FROM
         Users u JOIN Post p ON u.id = p.authorId

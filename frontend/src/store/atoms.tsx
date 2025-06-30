@@ -36,7 +36,7 @@ export const blogAtom = atom<Blog>({
 });
 
 // const dns = "http://localhost:3001";
-const dns = "http://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/Journal";
+const dns = "http://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/journal";
 
 export const sessionAtom = atom(null,
     async (_get, set, content : Session) => {
@@ -184,9 +184,10 @@ export const initializeBlogAtom = atom(null,
         });
         const data = await res.json();
         if (res.status === 201) {
-            sessionStorage.removeItem('draft');
-            const blog : Blog = {title : title, content : content, published : published, id : data.id}
-            sessionStorage.setItem('draft', JSON.stringify(blog));
+            // sessionStorage.removeItem('draft');
+            // const blog : Blog = {title : title, content : content, published : published, id : data.id}
+            // sessionStorage.setItem('draft', JSON.stringify(blog));
+            return data.id;
         } else {
             set(warningAtom, data.msg);
         }

@@ -18,7 +18,7 @@ function App() {
         <Route path="/user/login" element={<Login />}/>
         <Route path="/user/signup" element={<Signup />}/>
         <Route path="/account/feed" element={<Feed />}/>
-        <Route path="/account/create" element={<Draft />} />
+        <Route path="/account/create/:id" element={<Draft />} />
         <Route path="/account/page/:id" element={<Page />} />
         <Route path="/account/stories" element={<Stories />}>
             <Route index element={<Navigate to="draft" replace />}/>
@@ -30,7 +30,8 @@ function App() {
             <Route path="home" element={<Home />}/>
             <Route path="about" element={<About />}/>
         </Route>
-        <Route path="*" element={<Login />}/>
+        <Route path="/" element={<Navigate to="/user/login" replace />}/>
+        <Route path="*" element={<Navigate to="/account/feed" replace />}/>
       </Routes>
     </BrowserRouter>
   )
