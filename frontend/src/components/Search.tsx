@@ -3,7 +3,7 @@ import { filteredBlogsAtom } from "../store/atoms"
 import { useNavigate } from "react-router-dom";
 import { FixedSizeList, type ListChildComponentProps } from 'react-window';
 
-export default function Search() {
+export default function Search({setShowSearchResults}: {setShowSearchResults: (show: boolean) => void}) {
     const blogs = useAtomValue(filteredBlogsAtom);
 
     const MAX_HEIGHT = 400;
@@ -11,7 +11,10 @@ export default function Search() {
 
     const Row = ({ index }: ListChildComponentProps) => (
         <div key={blogs[index].id} className="relative font-bold p-4 bg-white w-180">
-            <button onClick={() => navigate('/account/page/' + blogs[index].id)} className="pl-10 text-xl text-black font-mono font-semibold hover:cursor-pointer">{blogs[index].title}</button>
+            <button onClick={() => {
+                setShowSearchResults(false);
+                navigate('/account/page/' + blogs[index].id)
+            }} className="pl-10 text-xl text-black font-mono font-semibold hover:cursor-pointer">{blogs[index].title}</button>
         </div>
     )
     const navigate = useNavigate();

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ProfileDropdown from "./components/ProfileDropdown";
 import { initializeBlogAtom, searchQueryAtom } from "./store/atoms";
 import { useSetAtom } from "jotai";
 import Search from "./components/Search";
 
 export default function Navbar(){
+
+    const location = useLocation();
     const navigate = useNavigate();
     const [toggle, setToggle] = useState(false);
     const author = sessionStorage.getItem('Author') || "Author";
@@ -26,13 +28,15 @@ export default function Navbar(){
     }
 
     useEffect(() => {
+        setShowSearchResults(false);
+    }, [location]);
+
+    useEffect(() => {
         function onClick(e: MouseEvent) {
         // if click is neither on the input nor inside the results → hide
         if (
             searchRef.current &&
-            !searchRef.current.contains(e.target as Node) &&
-            resultsRef.current &&
-            !resultsRef.current.contains(e.target as Node)
+            !searchRef.current.contains(e.target as Node)
         ) {
             setShowSearchResults(false);
         }
@@ -54,7 +58,7 @@ export default function Navbar(){
                     {
                         showSearchResults && 
                         <div ref={resultsRef} className="absolute top-16">
-                            <Search />
+                            <Search setShowSearchResults={setShowSearchResults} />
                         </div>
                     }
                 </div>
