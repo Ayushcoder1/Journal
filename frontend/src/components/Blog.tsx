@@ -1,6 +1,7 @@
 import { useSetAtom } from "jotai";
 import { blogAtom, type Blog } from "../store/atoms";
 import { useNavigate } from "react-router-dom";
+import BlogData from "./BlogData";
 
 export default function Blog({blog} : {blog : Blog}) {
     const blogSet = useSetAtom(blogAtom);
@@ -18,5 +19,9 @@ export default function Blog({blog} : {blog : Blog}) {
         </div>
         <div className="font-bold text-3xl mb-2 hover:cursor-pointer" onClick={() => renderPage(blog)}>{blog.title}</div>
         <div className="text-xl text-zinc-500">{blog.content.substring(0, 50)} . . . </div>
+
+        <div className="mt-6">
+            <BlogData blog={blog} />
+        </div>
     </div>
 }

@@ -60,10 +60,19 @@ router.get('/feed', authmiddleware, async (req : any, res : any) => {
     const email = req.user;
     // console.log(email);
     const data = await pool.query(`
-        SELECT p.id, p.title, p.content, p.created_at, p.reads, u.name FROM
-        Users u JOIN Post p ON u.id = p.authorId
-        WHERE u.email != $1 AND p.published = true
-        ORDER BY reads DESC LIMIT 10;
+        SELECT p.id, p.title, p.content, p.created_at, p.reads, u.name,
+        CASE WHEN b.user_id IS NULL THEN FALSE ELSE TRUE END AS bookmark
+        FROM Users u
+        JOIN Post p
+        ON u.id = p.authorId
+        LEFT JOIN Bookmarks b
+        ON b.post_id = p.id
+        AND b.user_id = (SELECT id FROM Users WHERE email = $1) 
+        WHERE
+        u.email != $1
+        AND p.published = TRUE
+        ORDER BY reads DESC
+        LIMIT 10;
     `, [email]);
     // console.log(data);
     return res.status(200).json(data.rows);
@@ -91,6 +100,41 @@ router.get('/blog/filter/:filter', authmiddleware, async (req : any, res : any) 
         ORDER BY reads DESC LIMIT 10; 
     `, [`%${filter}%`]);
 
+    return res.status(200).json(data.rows);
+})
+
+router.post('/bookmark', authmiddleware, async (req : any, res : any) => {
+    const email = req.user;
+    const postId = req.body.post_id;
+
+    const { rowCount } = await pool.query(`
+        SELECT * FROM Bookmarks WHERE user_id = (SELECT id FROM Users WHERE email = $1) AND post_id = $2;
+    `, [email, postId]);
+    if (rowCount) {
+        await pool.query(`
+            DELETE FROM Bookmarks WHERE user_id = (SELECT id FROM Users WHERE email = $1) AND post_id = $2;
+        `, [email, postId]);
+        return res.status(200).json({ msg: "Bookmark removed" });
+    } else {
+        await pool.query(`
+            INSERT INTO Bookmarks (user_id, post_id) VALUES ((SELECT id FROM Users WHERE email = $1), $2);
+        `, [email, postId]);
+        return res.status(200).json({ msg: "Bookmark added" });
+    }
+})
+
+router.get('/bookmarks', authmiddleware, async (req : any, res : any) => {
+    const email = req.user;
+    // console.log(email);
+    const data = await pool.query(`
+        SELECT p.id, p.title, p.content, p.created_at, p.reads, u.name, TRUE AS bookmark
+        FROM Post p
+        JOIN Bookmarks b ON p.id = b.post_id
+        JOIN Users u ON p.authorId = u.id
+        WHERE b.user_id = (SELECT id FROM Users WHERE email = $1)
+        ORDER BY p.reads DESC;
+    `, [email]);
+    // console.log(data);
     return res.status(200).json(data.rows);
 })
 

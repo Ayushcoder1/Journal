@@ -7,7 +7,8 @@ export type Blog = {
     content : string,
     created_at? : string,
     reads? : number,
-    published? : boolean
+    published? : boolean,
+    bookmark? : boolean
 };
 
 export type Session = {
@@ -29,14 +30,16 @@ export const draftAtom = atom<Blog>();
 
 export const filteredBlogsAtom = atom<Blog[]>([]);
 
+export const bookmarksAtom = atom<Blog[]>([]);
+
 export const blogAtom = atom<Blog>({
     title : "",
     content : "",
     name : "",
 });
 
-// const dns = "http://localhost:3001";
-const dns = "http://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/journal";
+const dns = "http://localhost:3001";
+// const dns = "http://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/journal";
 
 export const sessionAtom = atom(null,
     async (_get, set, content : Session) => {
@@ -184,9 +187,6 @@ export const initializeBlogAtom = atom(null,
         });
         const data = await res.json();
         if (res.status === 201) {
-            // sessionStorage.removeItem('draft');
-            // const blog : Blog = {title : title, content : content, published : published, id : data.id}
-            // sessionStorage.setItem('draft', JSON.stringify(blog));
             return data.id;
         } else {
             set(warningAtom, data.msg);
@@ -210,6 +210,45 @@ export const searchQueryAtom = atom(null,
             set(filteredBlogsAtom, data);
         }
         else{
+            set(warningAtom, data.msg);
+        }
+    }
+)
+
+export const bookmarkAtom = atom(null, 
+    async (get, set, {post_id} : {post_id : string}) => {
+        const token = get(tokenAtom);
+        const res = await fetch(`${dns}/account/bookmark`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body : JSON.stringify({post_id})
+        });
+        const data = await res.json();
+        if (res.status === 200) {
+            // console.log(data);
+        } else {
+            set(warningAtom, data.msg);
+        }
+    }
+)
+
+export const getBookmarksAtom = atom(null,
+    async(get, set) => {
+        const token = get(tokenAtom);
+        const res = await fetch(`${dns}/account/bookmarks`, {
+            method: 'GET',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+        });
+        const data = await res.json();
+        if (res.status === 200) {
+            set(bookmarksAtom, data);
+        } else {
             set(warningAtom, data.msg);
         }
     }

@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 
-const connection : string = "postgresql://blog:newayush123@localhost:5431/blog";
+// const connection : string = "postgresql://blog:newayush123@localhost:5431/blog";
+const connection: string = "postgresql://blog:newayush123@13.235.78.242:5431/blog";
 
 const pool = new Pool({
   connectionString: connection,
