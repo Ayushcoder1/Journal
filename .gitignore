@@ -18,4 +18,4 @@ Thumbs.db
 .idea/
 
 # Env files (secrets)
-.env
+# .env

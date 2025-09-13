@@ -1,0 +1,22 @@
+import type { Comment } from "../store/atoms";
+
+export default function Comment({ comment } : {comment : Comment}) {
+    const date = comment.created_at?.substring(0, 10);
+    return <div className="p-4 mt-4">
+        <div className="flex justify-start gap-2 text-sm text-zinc-500">
+            <p className="text-black font-semibold">{comment.name}</p>
+            <p> • </p>
+            <p>{date}</p>
+        </div>
+        <div className="text-xl text-zinc-600 mt-2 font-mono">{comment.content}</div>
+
+        <div className="mt-6">
+            <div className="flex gap-1 items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5 ">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+            </svg>
+            <p className="font-mono">{comment.likes}</p>
+        </div>
+        </div>
+    </div>
+}

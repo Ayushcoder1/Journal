@@ -15,29 +15,4 @@ pool.on('error', (err, client) => {
   console.error('Unexpected error on idle PostgreSQL client', err);
 });
 
-// async function addTables(){
-//     await pool.query(`
-//         CREATE TABLE Users (
-//             id BIGSERIAL PRIMARY KEY,
-//             email VARCHAR(60) UNIQUE NOT NULL,
-//             name VARCHAR(40),
-//             password VARCHAR(40) NOT NULL
-//         );
-//     `);
-//     await pool.query(`
-//         CREATE TABLE Post (
-//             id BIGSERIAL PRIMARY KEY,
-//             title VARCHAR(200) NOT NULL,
-//             content TEXT,
-//             published BOOLEAN DEFAULT FALSE,
-//             authorId BIGINT,
-//             reads BIGINT,
-//             created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-//             FOREIGN KEY(authorId) REFERENCES Users(id) ON DELETE CASCADE
-//         );
-//     `)
-// }
-
-// addTables();
-
 export default pool;

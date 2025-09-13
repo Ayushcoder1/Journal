@@ -3,12 +3,20 @@ import { atom } from "jotai";
 export type Blog = {
     id? : string,
     name? : string,
-    title : string,
+    title? : string,
     content : string,
     created_at? : string,
     reads? : number,
     published? : boolean,
     bookmark? : boolean
+};
+
+export type Comment = {
+    id : string,
+    name : string,
+    content : string,
+    created_at : string,
+    likes : number
 };
 
 export type Session = {
@@ -28,6 +36,8 @@ export const storiesAtom = atom<Blog[]>([]);
 
 export const draftAtom = atom<Blog>();
 
+export const commentsAtom = atom<Comment[]>([]);
+
 export const filteredBlogsAtom = atom<Blog[]>([]);
 
 export const bookmarksAtom = atom<Blog[]>([]);
@@ -38,8 +48,8 @@ export const blogAtom = atom<Blog>({
     name : "",
 });
 
-// const dns = "http://localhost:3001";
-const dns = "http://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/journal";
+const dns = "http://localhost:3001";
+// const dns = "http://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/journal";
 
 export const sessionAtom = atom(null,
     async (_get, set, content : Session) => {
@@ -98,7 +108,7 @@ export const fetchBlogAtom = atom(null,
         const data = await res.json();
         if (res.status === 200) {
             // console.log(data);
-            set(blogAtom, data[0]);
+            set(blogAtom, data);
         } else {
             set(warningAtom, data.msg);
         }
@@ -186,8 +196,9 @@ export const initializeBlogAtom = atom(null,
             body : JSON.stringify({title, content, published})
         });
         const data = await res.json();
+        // console.log(data);
         if (res.status === 201) {
-            return data.id;
+            return data;
         } else {
             set(warningAtom, data.msg);
         }
@@ -248,6 +259,42 @@ export const getBookmarksAtom = atom(null,
         const data = await res.json();
         if (res.status === 200) {
             set(bookmarksAtom, data);
+        } else {
+            set(warningAtom, data.msg);
+        }
+    }
+)
+
+export const commentAtom = atom(null,
+    async(get, set, {post_id, content} : {post_id : string, content : string}) => {
+        const token = get(tokenAtom);
+        const author = sessionStorage.getItem('Author') || "Unknown";
+        const res = await fetch(`${dns}/account/comment`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                 'Authorization': 'Bearer ' + token
+            },
+            body : JSON.stringify({post_id, content, author})
+        });
+        const data = await res.json();
+        set(commentsAtom, [...get(commentsAtom), data]);
+    }
+)
+
+export const fetchCommentsAtom = atom(null,
+    async(get, set, post_id : string) => {
+        const token = get(tokenAtom);
+        const res = await fetch(`${dns}/account/comments/${post_id}`, {
+            method: 'GET',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+        });
+        const data = await res.json();
+        if (res.status === 200) {
+            set(commentsAtom, data);
         } else {
             set(warningAtom, data.msg);
         }

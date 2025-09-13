@@ -44,7 +44,7 @@ function Signin({isSignin} : {isSignin : number}){
             </div>
             <div>
                 <p className='text-lg font-semibold text-black'>Password</p>
-                <input ref={passwordRef} type="text" placeholder='12345678' className='border-black border-2 w-80 rounded-sm p-2 mb-6'/>
+                <input ref={passwordRef} type="password" placeholder='12345678' className='border-black border-2 w-80 rounded-sm p-2 mb-6'/>
             </div>
             <div>
                 <button onClick={session} className='border-black border-2 w-80 rounded-full p-2 mb-2 text-white bg-green-500 text-lg font-bold'>{isSignin ? "Log in" : "Sign up"}</button>

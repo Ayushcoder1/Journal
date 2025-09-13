@@ -23,7 +23,7 @@ export default function Draft() {
 
     // and this effect will update your refs whenever the atom changes:
     useEffect(() => {
-        titleRef.current!.value   = blog.title
+        titleRef.current!.value   = blog.title || ""
         contentRef.current!.value = blog.content
     }, [blog]);
 
