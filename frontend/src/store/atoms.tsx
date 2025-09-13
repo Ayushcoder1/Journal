@@ -48,8 +48,8 @@ export const blogAtom = atom<Blog>({
     name : "",
 });
 
-const dns = "http://localhost:3001";
-// const dns = "http://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/journal";
+// const dns = "http://localhost:3001";
+const dns = "http://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/journal";
 
 export const sessionAtom = atom(null,
     async (_get, set, content : Session) => {
