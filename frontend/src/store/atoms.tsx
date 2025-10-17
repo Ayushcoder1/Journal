@@ -49,7 +49,9 @@ export const blogAtom = atom<Blog>({
 });
 
 // const dns = "http://localhost:3001";
-const dns = "http://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/journal";
+// const dns = "https://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/journal";
+const dns = "https://dhth0qwhtmigc.cloudfront.net/journal";
+
 
 export const sessionAtom = atom(null,
     async (_get, set, content : Session) => {
