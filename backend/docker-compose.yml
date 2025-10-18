@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  backend-journal:
+    build: .
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./.env
+    restart: unless-stopped
+

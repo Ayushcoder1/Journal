@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://blog:newayush123@13.235.78.242:5431/blog"
+  url      = "postgresql://neondb_owner:npg_qEIiL7MWjsB6@ep-cool-bar-a152muup-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 }
 
 model bookmarks {

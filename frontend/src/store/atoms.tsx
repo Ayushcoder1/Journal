@@ -48,7 +48,7 @@ export const blogAtom = atom<Blog>({
     name : "",
 });
 
-// const dns = "http://localhost:3001";
+// const dns = "http://localhost:3002";
 // const dns = "https://ec2-13-235-78-242.ap-south-1.compute.amazonaws.com/journal";
 const dns = "https://dhth0qwhtmigc.cloudfront.net/journal";
 

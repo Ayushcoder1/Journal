@@ -1,0 +1,16 @@
+# Reduce build context size and avoid leaking secrets
+node_modules
+npm-debug.log
+.git
+.gitignore
+.vscode
+.DS_Store
+.env
+
+# We run compiled JS from dist; source is not needed in the image
+src
+
+# Local artifacts
+coverage
+tmp
+
